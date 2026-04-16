@@ -1,6 +1,7 @@
 package config
 
 import (
+	"crypto/tls"
 	"fmt"
 	"os"
 	"strconv"
@@ -22,6 +23,12 @@ type Config struct {
 	GeminiChatModel       string
 	QdrantHost            string
 	QdrantPort            int
+	QdrantCollection      string
+	QdrantVectorSize      int
+	QdrantAPIKey          string
+	QdrantUseTLS          bool
+	QdrantSkipTLSVerify   bool
+	QdrantTLSConfig       *tls.Config // optional; set by main when skipping TLS verify
 
 	OIDCIssuerURL       string
 	OIDCAudience        string
@@ -47,6 +54,11 @@ func Load(serviceName string) (Config, error) {
 		GeminiChatModel:    getenv("GEMINI_CHAT_MODEL", "gemini-2.5-flash"),
 		QdrantHost:         getenv("QDRANT_HOST", "localhost"),
 		QdrantPort:         getenvInt("QDRANT_PORT", 6334),
+		QdrantCollection:   getenv("QDRANT_COLLECTION", "rag_corpus"),
+		QdrantVectorSize:   getenvInt("QDRANT_VECTOR_SIZE", 1536),
+		QdrantAPIKey:       os.Getenv("QDRANT_API_KEY"),
+		QdrantUseTLS:       getenvBool("QDRANT_USE_TLS", false),
+		QdrantSkipTLSVerify: getenvBool("QDRANT_SKIP_TLS_VERIFY", false),
 
 		OIDCIssuerURL:     strings.TrimSuffix(getenv("OIDC_ISSUER_URL", ""), "/"),
 		OIDCAudience:      getenv("OIDC_AUDIENCE", ""),
